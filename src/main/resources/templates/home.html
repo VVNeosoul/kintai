@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>ホーム</title>
+</head>
+<body>
+<h1>ようこそ、<span th:text="${username}"></span> さん</h1>
+<p th:if="${isAdmin}"><a th:href="@{/admin}">管理者メニュー</a></p>
+<form th:action="@{/logout}" method="post">
+    <button type="submit">ログアウト</button>
+</form>
+</body>
+</html>
