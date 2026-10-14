@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>勤怠打刻</title>
+</head>
+<body>
+<h1>勤怠打刻</h1>
+
+<p th:if="${message}" th:text="${message}"></p>
+<p th:if="${error}" th:text="${error}" style="color:red;"></p>
+
+<p>
+    本日:
+    出勤
+    <span th:text="${today != null and today.clockIn != null} ? ${#temporals.format(today.clockIn, 'HH:mm')} : '--:--'"></span>
+    / 退勤
+    <span th:text="${today != null and today.clockOut != null} ? ${#temporals.format(today.clockOut, 'HH:mm')} : '--:--'"></span>
+</p>
+
+<form th:if="${today == null}" th:action="@{/attendance/clock-in}" method="post">
+    <button type="submit">出勤</button>
+</form>
+<form th:if="${today != null and today.clockOut == null}" th:action="@{/attendance/clock-out}" method="post">
+    <button type="submit">退勤</button>
+</form>
+
+<h2>今月の記録</h2>
+<table border="1" cellpadding="6">
+    <thead>
+    <tr><th>日付</th><th>出勤</th><th>退勤</th></tr>
+    </thead>
+    <tbody>
+    <tr th:each="r : ${records}">
+        <td th:text="${#temporals.format(r.workDate, 'yyyy-MM-dd')}"></td>
+        <td th:text="${r.clockIn != null} ? ${#temporals.format(r.clockIn, 'HH:mm')} : '-'"></td>
+        <td th:text="${r.clockOut != null} ? ${#temporals.format(r.clockOut, 'HH:mm')} : '-'"></td>
+    </tr>
+    <tr th:if="${#lists.isEmpty(records)}">
+        <td colspan="3">記録がありません。</td>
+    </tr>
+    </tbody>
+</table>
+
+<p><a th:href="@{/}">ホームへ戻る</a></p>
+</body>
+</html>
