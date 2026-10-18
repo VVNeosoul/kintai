@@ -8,6 +8,7 @@
 <h1>ようこそ、<span th:text="${username}"></span> さん</h1>
 <p th:if="${isAdmin}"><a th:href="@{/admin}">管理者メニュー</a></p>
 <p><a th:href="@{/attendance}">勤怠打刻</a></p>
+<p><a th:href="@{/leave}">休暇申請</a></p>
 <form th:action="@{/logout}" method="post">
     <button type="submit">ログアウト</button>
 </form>
