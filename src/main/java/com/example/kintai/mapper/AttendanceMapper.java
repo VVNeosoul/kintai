@@ -1,5 +1,6 @@
 package com.example.kintai.mapper;
 
+import com.example.kintai.dto.AttendanceRow;
 import com.example.kintai.entity.Attendance;
 import org.apache.ibatis.annotations.*;
 import java.time.LocalDate;
@@ -26,4 +27,37 @@ public interface AttendanceMapper {
     List<Attendance> findByEmployeeIdAndPeriod(@Param("employeeId") Long employeeId,
                                                @Param("from") LocalDate from,
                                                @Param("to") LocalDate to);
+
+    @Select("""
+        <script>
+        SELECT e.employee_code AS employee_code, e.name AS employee_name,
+               a.work_date, a.clock_in, a.clock_out
+        FROM attendance a
+        JOIN employees e ON a.employee_id = e.id
+        WHERE a.work_date BETWEEN #{from} AND #{to}
+        <if test="employeeId != null">
+            AND a.employee_id = #{employeeId}
+        </if>
+        ORDER BY a.work_date DESC, e.employee_code
+        LIMIT #{limit} OFFSET #{offset}
+        </script>
+        """)
+    List<AttendanceRow> search(@Param("from") LocalDate from,
+                               @Param("to") LocalDate to,
+                               @Param("employeeId") Long employeeId,
+                               @Param("limit") int limit,
+                               @Param("offset") int offset);
+
+    @Select("""
+        <script>
+        SELECT COUNT(*) FROM attendance a
+        WHERE a.work_date BETWEEN #{from} AND #{to}
+        <if test="employeeId != null">
+            AND a.employee_id = #{employeeId}
+        </if>
+        </script>
+        """)
+    long count(@Param("from") LocalDate from,
+               @Param("to") LocalDate to,
+               @Param("employeeId") Long employeeId);
 }

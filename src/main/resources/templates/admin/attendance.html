@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>出勤記録の検索</title>
+</head>
+<body>
+<h1>出勤記録の検索</h1>
+
+<form th:action="@{/admin/attendance}" method="get">
+    <label>対象月 <input type="month" name="month" th:value="${month}" required></label>
+    <label>社員
+        <select name="employeeId">
+            <option value="">全員</option>
+            <option th:each="e : ${employees}"
+                    th:value="${e.id}"
+                    th:text="${e.employeeCode + ' ' + e.name}"
+                    th:selected="${employeeId != null and e.id == employeeId}"></option>
+        </select>
+    </label>
+    <button type="submit">検索</button>
+    <a th:href="@{/admin/attendance/export(month=${month},employeeId=${employeeId})}">CSVエクスポート</a>
+</form>
+
+<table border="1" cellpadding="6">
+    <thead>
+    <tr><th>社員番号</th><th>氏名</th><th>日付</th><th>出勤</th><th>退勤</th><th>勤務時間</th></tr>
+    </thead>
+    <tbody>
+    <tr th:each="r : ${result.items}">
+        <td th:text="${r.employeeCode}"></td>
+        <td th:text="${r.employeeName}"></td>
+        <td th:text="${#temporals.format(r.workDate, 'yyyy-MM-dd')}"></td>
+        <td th:text="${r.clockIn != null} ? ${#temporals.format(r.clockIn, 'HH:mm')} : '-'"></td>
+        <td th:text="${r.clockOut != null} ? ${#temporals.format(r.clockOut, 'HH:mm')} : '-'"></td>
+        <td th:text="${r.workingTime}"></td>
+    </tr>
+    <tr th:if="${#lists.isEmpty(result.items)}">
+        <td colspan="6">該当する記録がありません。</td>
+    </tr>
+    </tbody>
+</table>
+
+<p>
+    <a th:if="${result.page > 1}"
+       th:href="@{/admin/attendance(month=${month},employeeId=${employeeId},page=${result.page - 1})}">前へ</a>
+    <span th:text="${result.page} + ' / ' + ${result.totalPages} + ' ページ（全 ' + ${result.totalItems} + ' 件）'"></span>
+    <a th:if="${result.page < result.totalPages}"
+       th:href="@{/admin/attendance(month=${month},employeeId=${employeeId},page=${result.page + 1})}">次へ</a>
+</p>
+
+<p><a th:href="@{/admin}">管理者メニューへ戻る</a></p>
+</body>
+</html>
